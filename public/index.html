@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player SDK</title>
+  </head>
+  <body>
+    <div>
+      <video id="videoElement" controls></video>
+    </div>
+    <script src="/dist/bundle.js"></script>
+    <script>
+      var player = new VideoPlayerSDK({
+        videoElement: "videoElement",
+        videoSrc:
+          "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      });
+    </script>
+  </body>
+</html>
