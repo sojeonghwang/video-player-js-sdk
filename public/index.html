@@ -8,14 +8,30 @@
   <body>
     <div>
       <video id="videoElement" controls></video>
+      <button id="play">재생</button>
+      <button id="stop">정지</button>
+      <button id="getCodec">코텍정보가져오기</button>
     </div>
     <script src="/dist/bundle.js"></script>
     <script>
-      var player = new VideoPlayerSDK({
+      const player = new VideoPlayerSDK({
         videoElement: "videoElement",
         videoSrc:
           "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       });
+
+      document.getElementById("play").onclick = () => {
+        player.play();
+      };
+
+      document.getElementById("stop").onclick = () => {
+        player.pause();
+      };
+
+      document.getElementById("getCodec").onclick = async () => {
+        const response = await player.getVideoCodec();
+        console.log("?response", response);
+      };
     </script>
   </body>
 </html>
