@@ -1,10 +1,13 @@
-import { PlayerOptions } from "../types";
-import mp4box from "mp4box";
+import { PlayerOptions, VideoInfo } from "../types";
 
-class Player {
+import { Codec } from "./codec";
+
+class Player extends Codec {
   private videoElement: HTMLVideoElement;
+  public videoCodecInfo: VideoInfo | null;
 
   constructor(options: PlayerOptions) {
+    super();
     const videoElement = document.getElementById(
       options.videoElement
     ) as HTMLVideoElement;
@@ -12,8 +15,13 @@ class Player {
       throw new Error(`Element with id ${options.videoElement} not found`);
     }
 
+    if (!options.videoSrc) {
+      throw new Error("videoSrc not found");
+    }
+
     this.videoElement = videoElement;
     this.videoElement.src = options.videoSrc;
+    this.videoCodecInfo = null;
   }
 
   /**
@@ -38,9 +46,9 @@ class Player {
     }
   }
 
-  getVideoCodec() {
-    console.log("?mp4box", mp4box);
-    //
+  async getVideoCodec(): Promise<any> {
+    const videoInfo = await this.getVideoInfo(this.videoElement.src);
+    return videoInfo;
   }
 }
 

@@ -16,6 +16,7 @@ declare module "mp4box" {
     codec: string;
     language: string;
     nb_samples: number;
+    size: number;
   }
 
   interface MP4VideoData {
