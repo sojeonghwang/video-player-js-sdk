@@ -25,7 +25,7 @@ class Player extends Codec {
   }
 
   /**
-   * Play video.
+   * Play video
    */
   play(): void {
     try {
@@ -36,7 +36,7 @@ class Player extends Codec {
   }
 
   /**
-   * Stop video.
+   * Stop video
    */
   pause(): void {
     try {
@@ -46,7 +46,18 @@ class Player extends Codec {
     }
   }
 
-  async getVideoCodec(): Promise<any> {
+  /**
+   * get video, audio codec info
+   */
+  async getVideoCodec(): Promise<{
+    videoCodec: string;
+    videoTrackSize: number;
+    videoTrackBitrate: number;
+    audioCodec: string;
+    audioTrackSize: number;
+    audioTrackBitrate: number;
+    brands: string;
+  }> {
     const videoInfo = await this.getVideoInfo(this.videoElement.src);
     return videoInfo;
   }

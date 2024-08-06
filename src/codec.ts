@@ -1,8 +1,16 @@
 import MP4Box, { MP4ArrayBuffer } from "mp4box";
 
 export class Codec {
-  getVideoInfo(ASSET_URL: string) {
-    return new Promise((resolve, reject) => {
+  getVideoInfo(ASSET_URL: string): Promise<{
+    videoCodec: string;
+    videoTrackSize: number;
+    videoTrackBitrate: number;
+    audioCodec: string;
+    audioTrackSize: number;
+    audioTrackBitrate: number;
+    brands: string;
+  }> {
+    return new Promise((resolve, reject): void => {
       const mp4boxfile = MP4Box.createFile();
 
       playMp4(0, 100000);
@@ -28,10 +36,13 @@ export class Codec {
             if (!isMp4BoxOnReady) {
               playMp4(end, end + 100000);
             }
+          })
+          .catch((exception) => {
+            reject(`video request error ${exception}`);
           });
       }
 
-      function bindMp4box() {
+      function bindMp4box(): void {
         mp4boxfile.onReady = (info: MP4Box.MP4Info) => {
           isMp4BoxOnReady = true;
           showVideoInfo(info);
@@ -42,7 +53,7 @@ export class Codec {
         };
       }
 
-      function showVideoInfo(info: MP4Box.MP4Info) {
+      function showVideoInfo(info: MP4Box.MP4Info): void {
         const [videoTrack, audioTrack] = info.tracks;
 
         resolve({
