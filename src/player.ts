@@ -1,4 +1,5 @@
-import { PlayerOptions } from "./types";
+import { PlayerOptions } from "../types";
+import mp4box from "mp4box";
 
 class Player {
   private videoElement: HTMLVideoElement;
@@ -15,12 +16,31 @@ class Player {
     this.videoElement.src = options.videoSrc;
   }
 
-  play() {
-    this.videoElement.play();
+  /**
+   * Play video.
+   */
+  play(): void {
+    try {
+      this.videoElement.play();
+    } catch (exception) {
+      console.error("Failed to play video:", exception);
+    }
   }
 
-  pause() {
-    this.videoElement.pause();
+  /**
+   * Stop video.
+   */
+  pause(): void {
+    try {
+      this.videoElement.pause();
+    } catch (exception) {
+      console.error("Failed to pause video:", exception);
+    }
+  }
+
+  getVideoCodec() {
+    console.log("?mp4box", mp4box);
+    //
   }
 }
 
