@@ -1,71 +1,89 @@
 import MP4Box, { MP4ArrayBuffer } from "mp4box";
+import { VideoInfo } from "../types";
 
 export class Codec {
-  getVideoInfo(ASSET_URL: string): Promise<{
-    videoCodec: string;
-    videoTrackSize: number;
-    videoTrackBitrate: number;
-    audioCodec: string;
-    audioTrackSize: number;
-    audioTrackBitrate: number;
-    brands: string;
-  }> {
-    return new Promise((resolve, reject): void => {
-      const mp4boxfile = MP4Box.createFile();
+  isMp4BoxOnReady: boolean;
+  mp4boxfile: MP4Box.MP4File;
 
-      playMp4(0, 100000);
+  constructor() {
+    this.isMp4BoxOnReady = false;
+    this.mp4boxfile = MP4Box.createFile();
+  }
 
-      let isMp4BoxOnReady = false;
+  showVideoInfo(
+    info: MP4Box.MP4Info,
+    resolve: (value: VideoInfo) => void
+  ): void {
+    const [videoTrack, audioTrack] = info.tracks;
 
-      function playMp4(start: number, end: number) {
-        bindMp4box();
-        const range = `bytes=${start}-${end}`;
-        fetch(ASSET_URL, {
-          headers: {
-            range,
-          },
-        })
-          .then(function (response) {
-            return response.arrayBuffer();
-          })
-          .then((arrayBuffer: ArrayBuffer) => {
-            const mp4ArrayBuffer = arrayBuffer as MP4ArrayBuffer;
-            mp4ArrayBuffer.fileStart = start;
-            mp4boxfile.appendBuffer(mp4ArrayBuffer);
+    this.isMp4BoxOnReady = true;
 
-            if (!isMp4BoxOnReady) {
-              playMp4(end, end + 100000);
-            }
-          })
-          .catch((exception) => {
-            reject(`video request error ${exception}`);
-          });
-      }
-
-      function bindMp4box(): void {
-        mp4boxfile.onReady = (info: MP4Box.MP4Info) => {
-          isMp4BoxOnReady = true;
-          showVideoInfo(info);
-        };
-        mp4boxfile.onError = (exception) => {
-          isMp4BoxOnReady = true;
-          reject(`mp4box on error ${exception}`);
-        };
-      }
-
-      function showVideoInfo(info: MP4Box.MP4Info): void {
-        const [videoTrack, audioTrack] = info.tracks;
-
-        resolve({
-          videoCodec: videoTrack.codec,
-          videoTrackSize: videoTrack.size,
-          videoTrackBitrate: videoTrack.bitrate,
-          audioCodec: audioTrack.codec,
-          audioTrackSize: audioTrack.size,
-          audioTrackBitrate: audioTrack.bitrate,
-          brands: info.brands.join(","),
-        });
-      }
+    resolve({
+      videoCodec: videoTrack.codec,
+      videoTrackSize: videoTrack.size,
+      videoTrackBitrate: videoTrack.bitrate,
+      audioCodec: audioTrack.codec,
+      audioTrackSize: audioTrack.size,
+      audioTrackBitrate: audioTrack.bitrate,
+      brands: info.brands.join(","),
     });
+  }
+
+  bindMp4box(
+    reject: (reason?: string) => void,
+    resolve: (value: VideoInfo) => void
+  ): void {
+    this.mp4boxfile.onReady = (info: MP4Box.MP4Info) => {
+      this.isMp4BoxOnReady = true;
+      this.showVideoInfo(info, resolve);
+    };
+    this.mp4boxfile.onError = (exception) => {
+      this.isMp4BoxOnReady = true;
+      reject(`mp4box on error ${exception}`);
+    };
+  }
+
+  fetchMp4ByMp4Box(
+    start: number,
+    end: number,
+    aseetUrl: string,
+    reject: (reason?: string) => void
+  ) {
+    const range = `bytes=${start}-${end}`;
+    fetch(aseetUrl, {
+      headers: {
+        range,
+      },
+    })
+      .then((response) => {
+        return response.arrayBuffer();
+      })
+      .then((arrayBuffer: ArrayBuffer) => {
+        const mp4ArrayBuffer = arrayBuffer as MP4ArrayBuffer;
+        mp4ArrayBuffer.fileStart = start;
+
+        this.mp4boxfile.appendBuffer(mp4ArrayBuffer);
+
+        if (!this.isMp4BoxOnReady) {
+          this.fetchMp4ByMp4Box(end, end + 100000, aseetUrl, reject);
+        }
+      })
+      .catch((exception) => {
+        reject(`video request error ${exception}`);
+      });
+  }
+
+  getVideoInfo(aseetUrl: string): Promise<VideoInfo> {
+    return new Promise(
+      async (
+        resolve: (value: VideoInfo) => void,
+        reject: (reason?: string) => void
+      ) => {
+        console.log("??");
+
+        await this.bindMp4box(reject, resolve);
+        await this.fetchMp4ByMp4Box(0, 100000, aseetUrl, reject);
+      }
+    );
   }
 }
