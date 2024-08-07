@@ -49,15 +49,7 @@ class Player extends Codec {
   /**
    * get video, audio codec info
    */
-  async getVideoCodec(): Promise<{
-    videoCodec: string;
-    videoTrackSize: number;
-    videoTrackBitrate: number;
-    audioCodec: string;
-    audioTrackSize: number;
-    audioTrackBitrate: number;
-    brands: string;
-  }> {
+  async getVideoCodec(): Promise<VideoInfo> {
     const videoInfo = await this.getVideoInfo(this.videoElement.src);
     return videoInfo;
   }
