@@ -16,6 +16,8 @@ export class Codec {
   ): void {
     const [videoTrack, audioTrack] = info.tracks;
 
+    this.isMp4BoxOnReady = true;
+
     resolve({
       videoCodec: videoTrack.codec,
       videoTrackSize: videoTrack.size,
@@ -31,9 +33,6 @@ export class Codec {
     reject: (reason?: string) => void,
     resolve: (value: VideoInfo) => void
   ): void {
-    if (!this.mp4boxfile) {
-      return;
-    }
     this.mp4boxfile.onReady = (info: MP4Box.MP4Info) => {
       this.isMp4BoxOnReady = true;
       this.showVideoInfo(info, resolve);
@@ -47,11 +46,11 @@ export class Codec {
   fetchMp4ByMp4Box(
     start: number,
     end: number,
-    ASSET_URL: string,
+    aseetUrl: string,
     reject: (reason?: string) => void
   ) {
     const range = `bytes=${start}-${end}`;
-    fetch(ASSET_URL, {
+    fetch(aseetUrl, {
       headers: {
         range,
       },
@@ -66,7 +65,7 @@ export class Codec {
         this.mp4boxfile.appendBuffer(mp4ArrayBuffer);
 
         if (!this.isMp4BoxOnReady) {
-          this.fetchMp4ByMp4Box(end, end + 100000, ASSET_URL, reject);
+          this.fetchMp4ByMp4Box(end, end + 100000, aseetUrl, reject);
         }
       })
       .catch((exception) => {
@@ -74,14 +73,16 @@ export class Codec {
       });
   }
 
-  getVideoInfo(ASSET_URL: string): Promise<VideoInfo> {
+  getVideoInfo(aseetUrl: string): Promise<VideoInfo> {
     return new Promise(
       async (
         resolve: (value: VideoInfo) => void,
         reject: (reason?: string) => void
       ) => {
+        console.log("??");
+
         await this.bindMp4box(reject, resolve);
-        await this.fetchMp4ByMp4Box(0, 100000, ASSET_URL, reject);
+        await this.fetchMp4ByMp4Box(0, 100000, aseetUrl, reject);
       }
     );
   }
