@@ -4,7 +4,6 @@ import { DEFAULT_VIDEO_SIZE } from "./constants";
 import { HlsPlayer } from "./hls";
 
 class Player extends HlsPlayer {
-  public videoElement: HTMLVideoElement;
   public videoCodecInfo: VideoInfo | null;
   public videoSize: { width: number; height: number };
 
@@ -22,7 +21,6 @@ class Player extends HlsPlayer {
       throw new Error("videoSrc not found");
     }
 
-    this.videoElement = videoElement;
     this.videoElement.src = options.videoSrc;
     this.videoCodecInfo = null;
     this.videoSize = options.size ?? DEFAULT_VIDEO_SIZE;

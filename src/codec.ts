@@ -81,7 +81,7 @@ export class Codec {
         reject: (reason?: string) => void
       ) => {
         await this.bindMp4box(reject, resolve);
-        await this.fetchMp4ByMp4Box(0, 100000, assetUrl, reject);
+        await this.fetchMp4ByMp4Box(0, REQUEST_MP4_BYTES, assetUrl, reject);
       }
     );
   }

@@ -3,12 +3,12 @@ import { Codec } from "./codec";
 import { parseCodecs } from "./util/parse";
 
 export class HlsPlayer extends Codec {
-  videoElement: HTMLVideoElement;
-  hls: Hls;
-  isHlsLoad: boolean;
-  isReady: boolean;
-  videoContentType: string | null;
-  codes: string[];
+  public videoElement: HTMLVideoElement;
+  private hls: Hls;
+  private isHlsLoad: boolean;
+  private isReady: boolean;
+  public videoContentType: string | null;
+  public codes: string[];
 
   constructor(videoElement: HTMLVideoElement, m3u8Src: string) {
     super();
