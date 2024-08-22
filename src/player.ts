@@ -1,16 +1,18 @@
 import { PlayerOptions, VideoInfo } from "../types";
+import Hls from "hls.js";
+import { DEFAULT_VIDEO_SIZE } from "./constants";
+import { HlsPlayer } from "./hls";
 
-import { Codec } from "./codec";
-
-class Player extends Codec {
-  private videoElement: HTMLVideoElement;
+class Player extends HlsPlayer {
   public videoCodecInfo: VideoInfo | null;
+  public videoSize: { width: number; height: number };
 
   constructor(options: PlayerOptions) {
-    super();
     const videoElement = document.getElementById(
       options.videoElement
     ) as HTMLVideoElement;
+    super(videoElement, options.videoSrc);
+
     if (!videoElement) {
       throw new Error(`Element with id ${options.videoElement} not found`);
     }
@@ -19,9 +21,11 @@ class Player extends Codec {
       throw new Error("videoSrc not found");
     }
 
-    this.videoElement = videoElement;
     this.videoElement.src = options.videoSrc;
     this.videoCodecInfo = null;
+    this.videoSize = options.size ?? DEFAULT_VIDEO_SIZE;
+    this.videoElement.width = this.videoSize.width;
+    this.videoElement.height = this.videoSize.height;
   }
 
   /**
@@ -29,6 +33,14 @@ class Player extends Codec {
    */
   play(): void {
     try {
+      if (this.videoContentType !== "video/mp4") {
+        //m3u8
+        if (Hls.isSupported()) {
+          this.playByHls();
+          return;
+        }
+      }
+
       this.videoElement.play();
     } catch (exception) {
       console.error("Failed to play video:", exception);
@@ -40,6 +52,14 @@ class Player extends Codec {
    */
   pause(): void {
     try {
+      if (this.videoContentType !== "video/mp4") {
+        //m3u8
+        if (Hls.isSupported()) {
+          this.pauseByHls();
+          return;
+        }
+      }
+
       this.videoElement.pause();
     } catch (exception) {
       console.error("Failed to pause video:", exception);
@@ -49,7 +69,11 @@ class Player extends Codec {
   /**
    * get video, audio codec info
    */
-  async getVideoCodec(): Promise<VideoInfo> {
+  async getVideoCodec(): Promise<VideoInfo | string[]> {
+    if (this.videoContentType !== "video/mp4") {
+      return this.codes;
+    }
+
     const videoInfo = await this.getVideoInfo(this.videoElement.src);
     return videoInfo;
   }
