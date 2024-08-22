@@ -1,6 +1,12 @@
 export interface PlayerOptions {
   videoElement: string;
   videoSrc: string;
+  size?: VideoSize;
+}
+
+export interface VideoSize {
+  width: number;
+  height: number;
 }
 
 export interface VideoInfo {

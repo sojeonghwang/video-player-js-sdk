@@ -79,8 +79,6 @@ export class Codec {
         resolve: (value: VideoInfo) => void,
         reject: (reason?: string) => void
       ) => {
-        console.log("??");
-
         await this.bindMp4box(reject, resolve);
         await this.fetchMp4ByMp4Box(0, 100000, aseetUrl, reject);
       }
