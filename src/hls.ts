@@ -17,11 +17,11 @@ export class HlsPlayer extends Codec {
     this.isHlsLoad = false;
     this.isReady = false;
     this.videoContentType = null;
-    this.fetctM3U8(m3u8Src);
+    this.fetchM3U8(m3u8Src);
     this.codes = [];
   }
 
-  async fetctM3U8(m3u8Src: string) {
+  async fetchM3U8(m3u8Src: string) {
     try {
       const response = await fetch(m3u8Src);
 
@@ -30,7 +30,7 @@ export class HlsPlayer extends Codec {
       const text = await response.text();
       this.codes = parseCodecs(text);
     } catch (exception) {
-      console.error(`[fetctM3U8] error ${exception}`);
+      console.error(`[fetchM3U8] error ${exception}`);
     }
   }
 
@@ -45,7 +45,8 @@ export class HlsPlayer extends Codec {
       this.isReady = true;
       callback?.();
     });
-    this.hls.on(Hls.Events.ERROR, (event, data) => {
+
+    this.hls.on(Hls.Events.ERROR, (_, data) => {
       console.error("HLS 오류:", data);
     });
   }

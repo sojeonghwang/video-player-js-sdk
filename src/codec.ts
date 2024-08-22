@@ -1,5 +1,6 @@
 import MP4Box, { MP4ArrayBuffer } from "mp4box";
 import { VideoInfo } from "../types";
+import { REQUEST_MP4_BYTES } from "./constants";
 
 export class Codec {
   isMp4BoxOnReady: boolean;
@@ -46,11 +47,11 @@ export class Codec {
   fetchMp4ByMp4Box(
     start: number,
     end: number,
-    aseetUrl: string,
+    assetUrl: string,
     reject: (reason?: string) => void
   ) {
     const range = `bytes=${start}-${end}`;
-    fetch(aseetUrl, {
+    fetch(assetUrl, {
       headers: {
         range,
       },
@@ -65,7 +66,7 @@ export class Codec {
         this.mp4boxfile.appendBuffer(mp4ArrayBuffer);
 
         if (!this.isMp4BoxOnReady) {
-          this.fetchMp4ByMp4Box(end, end + 100000, aseetUrl, reject);
+          this.fetchMp4ByMp4Box(end, end + REQUEST_MP4_BYTES, assetUrl, reject);
         }
       })
       .catch((exception) => {
@@ -73,14 +74,14 @@ export class Codec {
       });
   }
 
-  getVideoInfo(aseetUrl: string): Promise<VideoInfo> {
+  getVideoInfo(assetUrl: string): Promise<VideoInfo> {
     return new Promise(
       async (
         resolve: (value: VideoInfo) => void,
         reject: (reason?: string) => void
       ) => {
         await this.bindMp4box(reject, resolve);
-        await this.fetchMp4ByMp4Box(0, 100000, aseetUrl, reject);
+        await this.fetchMp4ByMp4Box(0, 100000, assetUrl, reject);
       }
     );
   }

@@ -1,6 +1,6 @@
 import { PlayerOptions, VideoInfo } from "../types";
 import Hls from "hls.js";
-import { defaultVideoSize } from "./constants";
+import { DEFAULT_VIDEO_SIZE } from "./constants";
 import { HlsPlayer } from "./hls";
 
 class Player extends HlsPlayer {
@@ -25,7 +25,7 @@ class Player extends HlsPlayer {
     this.videoElement = videoElement;
     this.videoElement.src = options.videoSrc;
     this.videoCodecInfo = null;
-    this.videoSize = options.size ?? defaultVideoSize;
+    this.videoSize = options.size ?? DEFAULT_VIDEO_SIZE;
     this.videoElement.width = this.videoSize.width;
     this.videoElement.height = this.videoSize.height;
   }
