@@ -1,4 +1,4 @@
-import { PlayerOptions, VideoInfo } from "../types";
+import { PlayerOptions, PlayRate, VideoInfo } from "../types";
 import Hls from "hls.js";
 import { DEFAULT_VIDEO_SIZE } from "./constants";
 import { HlsPlayer } from "./hls";
@@ -63,6 +63,16 @@ class Player extends HlsPlayer {
       this.videoElement.pause();
     } catch (exception) {
       console.error("Failed to pause video:", exception);
+    }
+  }
+  /**
+   * Change play rate
+   */
+  changePlayRate(rate: PlayRate): void {
+    try {
+      this.videoElement.playbackRate = rate;
+    } catch (exception) {
+      console.error("Failed to change play rate:", exception);
     }
   }
 

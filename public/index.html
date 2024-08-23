@@ -8,9 +8,19 @@
   <body>
     <div>
       <video id="videoElement" controls></video>
+
       <button id="play">재생</button>
       <button id="stop">정지</button>
       <button id="getCodec">코텍정보가져오기</button>
+      <div>코덱 정보: <span id="codecText"></span></div>
+      <select id="rateSelect">
+        <option>0.5</option>
+        <option selected>1</option>
+        <option>1.3</option>
+        <option>1.5</option>
+        <option>2</option>
+      </select>
+      <button id="rate">배속 변경</button>
     </div>
     <script src="/dist/bundle.js"></script>
     <script>
@@ -30,9 +40,15 @@
         player.pause();
       };
 
+      document.getElementById("rate").onclick = () => {
+        const selectedRate = document.getElementById("rateSelect").value;
+        player.changePlayRate(Number(selectedRate));
+      };
+
       document.getElementById("getCodec").onclick = async () => {
         const response = await player.getVideoCodec();
-        console.log("?response", response);
+        document.getElementById("codecText").innerHTML =
+          JSON.stringify(response);
       };
     </script>
   </body>
