@@ -18,3 +18,5 @@ export interface VideoInfo {
   audioTrackBitrate: number;
   brands: string;
 }
+
+export type PlayRate = 0.5 | 1 | 1.3 | 1.5 | 2;
